@@ -66,8 +66,8 @@ while run:
 
     # Celling collision -> bounce down, velocity = 0
     if coin_y<=coin_r:
-      coin_y=coin_r
-      vel_y=0
+      coin_y=coin_r 
+      vel_y= abs(vel_y) / 2
 
   # End if not is_jumping:
          
