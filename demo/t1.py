@@ -28,6 +28,9 @@ while run:
  
   keys = pygame.key.get_pressed()
 
+  if keys[pygame.K_ESCAPE]:
+    run=False
+
   # Horizontal movement (available in both modes)
   if keys[pygame.K_LEFT]:
     coin_x-=vel
@@ -72,7 +75,7 @@ while run:
   # End if not is_jumping:
          
 
-  win.fill(screen_background_color)
+  # win.fill(screen_background_color)
   pygame.draw.circle(win,coin_color,(int(coin_x),int(coin_y)),coin_r)
   pygame.display.update()
 
