@@ -74,8 +74,8 @@ while run:
 
   # End if not is_jumping:
          
-
-  # win.fill(screen_background_color)
+  
+  win.fill(screen_background_color)
   pygame.draw.circle(win,coin_color,(int(coin_x),int(coin_y)),coin_r)
   pygame.display.update()
 
