@@ -22,14 +22,11 @@ while run:
   clock.tick(30)  # Use Clock instead of delay for consistent frame pacing
 
   for e in pygame.event.get():
-    if e.type == pygame.QUIT:
+    if e.type == pygame.QUIT or ( e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE ):
       run=False
   # End for
  
   keys = pygame.key.get_pressed()
-
-  if keys[pygame.K_ESCAPE]:
-    run=False
 
   # Horizontal movement (available in both modes)
   if keys[pygame.K_LEFT]:
