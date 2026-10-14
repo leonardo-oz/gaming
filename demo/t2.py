@@ -1,3 +1,5 @@
+from health_bar import Health_Bar
+
 import pygame
 pygame.init()
 
@@ -34,6 +36,9 @@ current_ninja_surface= ninja_standing_surface
 current_ninja_rect= current_ninja_surface.get_rect(center=(screen_width//2, sky_raw_height-ninja_height//2+3))
 
 
+h= Health_Bar(pygame.Rect(10,10,100,20),0.25)
+
+
 running = True
 while running:
   clock.tick(60)  # Use Clock instead of delay for consistent frame pacing
@@ -52,6 +57,10 @@ while running:
       elif event.key == pygame.K_DOWN:
           current_ninja_surface= ninja_sit_surface
           print("Down Key pressed:", event.key)
+
+      if event.key == pygame.K_1:
+        h.update()
+        print("1 Key pressed:", h)
 
 
     if event.type == pygame.KEYUP:
@@ -75,6 +84,7 @@ while running:
 
   # hanldle key presses for movement
   keys = pygame.key.get_pressed()
+
   
   # Horizontal movement (available in both modes)
   if keys[pygame.K_LEFT]:
@@ -98,6 +108,8 @@ while running:
 
   screen_surface.blit(sky_surface, (0,0))
   screen_surface.blit(grass_surface, (0,sky_raw_height))
+  h.draw(screen_surface)
   screen_surface.blit(current_ninja_surface, current_ninja_rect)
+
   pygame.display.update()
 # End while
