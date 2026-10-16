@@ -1,4 +1,5 @@
 from health_bar import Health_Bar
+from health_bar import Heath_Bar_Heart
 
 import pygame
 pygame.init()
@@ -29,6 +30,9 @@ ninja_sit_surface= pygame.transform.scale(ninja_sit,(ninja_width,ninja_height))
 
 ninja_brucelee= pygame.image.load("pics/nj_brucelee.png").convert_alpha()
 ninja_brucelee_surface= pygame.transform.scale(ninja_brucelee,(ninja_width,ninja_height))
+
+heart = pygame.image.load("pics/heart.jpeg")
+heart_surface= pygame.transform.scale(heart,(20,20))
 vel=5
 clock= pygame.time.Clock()
 
@@ -36,7 +40,7 @@ current_ninja_surface= ninja_standing_surface
 current_ninja_rect= current_ninja_surface.get_rect(center=(screen_width//2, sky_raw_height-ninja_height//2+3))
 
 
-h= Health_Bar(pygame.Rect(10,10,100,20),0.25)
+h= Heath_Bar_Heart(heart_surface,5,20,10)
 
 
 running = True
@@ -60,7 +64,7 @@ while running:
 
       if event.key == pygame.K_1:
         h.update()
-        print("1 Key pressed:", h)
+        print("1 Key pressed:")
 
 
     if event.type == pygame.KEYUP:

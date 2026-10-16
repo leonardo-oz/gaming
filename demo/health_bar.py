@@ -1,4 +1,5 @@
 import pygame
+from pygame.surface import Surface
 
 class Health_Bar:
 
@@ -29,9 +30,41 @@ class Health_Bar:
 
 # End class
 
+class Heath_Bar_Heart:
+
+  def __init__(self, icon: Surface, n_lives: int, draw_x: float, draw_y: float):
+    self.icon = icon
+    self.num_of_lives = n_lives
+    self.draw_x = draw_x
+    self.draw_y = draw_y
+    
+    pass
+
+
+  def __str__(self):
+    # return number of lives remaining
+    f"number of lives {self.num_of_lives}"
+
+  def update(self):
+    # decrement by 1 if number of remaining lives > 0
+    self.num_of_lives = max(0, self.num_of_lives - 1)
+
+  def draw(self, canvas: pygame.Surface):
+    # draw a number of lives 
+    if self.num_of_lives > 0:  
+      for i in range(self.num_of_lives):
+        canvas.blit(self.icon,(self.draw_x+self.draw_x*i,self.draw_y))
+
+
+
 
 if __name__ == "__main__":
-  rec = pygame.Rect(10,10,100,20)
-  h = Health_Bar(rec,0.25)
-  h.update()
-  print(h)
+  # rec = pygame.Rect(10,10,100,20)
+  # h = Health_Bar(rec,0.25)
+  # h.update()
+  # print(h)
+  heart = pygame.image.load("pics/heart.jpeg")
+  heart_surface= pygame.transform.scale(heart,(20,20))
+
+  print(heart_surface)
+ 
