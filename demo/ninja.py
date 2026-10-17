@@ -32,54 +32,61 @@ class Ninja:
 
 
   def handle_events(self,event: Event):
-    # if event.type == pygame.KEYDOWN:
-    #   if event.key == pygame.K_LEFT:
-    #     self.current_surface= self.status_surface_dict["run_left.png"]
-    #     print("Left Key Down pressed:", event.key)
-    #   elif event.key == pygame.K_RIGHT:
-    #     self.current_surface= self.status_surface_dict["run_right.png"]
-    #     print("Right Key Down pressed:", event.key)
-    #   elif event.key == pygame.K_DOWN:
-    #       self.current_surface= self.status_surface_dict["meditaing"]
-    #       print("Down Key pressed:", event.key)
+    """handle discrete (single-press / release) events."""
+
+
+    if event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_LEFT:
+        self.current_status= "running_left"
+        print("Left Key Down pressed:", event.key)
+      elif event.key == pygame.K_RIGHT:
+        self.current_status= "running_right"
+        print("Right Key Down pressed:", event.key)
+      elif event.key == pygame.K_DOWN:
+        self.current_status= "meditating"
+        print("Down Key pressed:", event.key)
+      
+      
 
 
 
-    #   if event.type == pygame.KEYUP:
-    #   print("Key Up pressed:", event.key)
-    #   self.current_surface= ninja_standing_surface
+    elif event.type == pygame.KEYUP:
+      print("Key Up pressed:", event.key)
+      if event.key in (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN):
+        self.current_status= "standing"
 
 
-    # if event.type == pygame.MOUSEBUTTONDOWN:
-    #   print("Mouse Button Down pressed:", event.button)
-    #   if self.current_surface.collidepoint(event.pos):
-    #     self.current_surface= ninja_brucelee_surface
+    elif event.type == pygame.MOUSEBUTTONDOWN:
+      print("Mouse Button Down pressed:", event.button)
+      if self.rec.collidepoint(event.pos):
+        self.current_status= "bruce_lee"
 
 
-    # if event.type == pygame.MOUSEBUTTONUP:
-    #   print("Mouse Button Up pressed:", event.button)
-    #   self.current_surface= ninja_standing_surface
+    elif event.type == pygame.MOUSEBUTTONUP:
+      print("Mouse Button Up pressed:", event.button)
+      if self.current_status == "bruce_lee":
+        self.current_status= "standing"
 
-    # Handle non-continuous event
-    pass
+
+    # End method
+
     
-  def update(self,event: Event, screen_width: int):
-    # vel=5
-    # # handle continuous event
-    # if event[pygame.K_LEFT]:
-    #         self.rec.left -= vel
-    #         if self.rec.left <= 0:
-    #           self.rec.left = 0
+  def update(self,keys, screen_width: int):
+    # handle continuous event
+    if keys[pygame.K_LEFT]:
+      self.rec.left -= self.vel
+      if self.rec.left <= 0:
+        self.rec.left = 0
         
-    #         print("Left pressed:", self.rec.left)
+      print("Left pressed:", self.rec.left)
             
-    # if event[pygame.K_RIGHT]:
-    #   self.rec.right += vel
-    #   if self.rec.right>= screen_width:
-    #     self.rec.right = screen_width
+    if keys[pygame.K_RIGHT]:
+      self.rec.right += self.vel
+      if self.rec.right>= screen_width:
+        self.rec.right = screen_width
 
-    #   print("Right pressed:", self.rec.right)
-    pass
+      print("Right pressed:", self.rec.right)
+    
 
   def draw(self,canva):
     canva.blit(self.status_surface_dict[self.current_status], self.rec)
