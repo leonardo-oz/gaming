@@ -53,7 +53,7 @@ ninja = Ninja(nj_ini_rec,nj_file_dic,vel=vel)
 SPAWN_BOMB_EVENT = pygame.USEREVENT + 1
 
 pygame.time.set_timer(SPAWN_BOMB_EVENT,2000)
-
+bomb_list =[]
 
 def _create_bomb_surface(w,h):
   i = random.randint(1,3)
