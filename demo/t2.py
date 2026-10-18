@@ -52,8 +52,8 @@ nj_ini_rec = pygame.Rect(screen_width//2,sky_raw_height-ninja_height//2+3,ninja_
 ninja = Ninja(nj_ini_rec,nj_file_dic,vel=vel)
 SPAWN_BOMB_EVENT = pygame.USEREVENT + 1
 
-pygame.time.set_timer(SPAWN_BOMB_EVENT,2000)
-bomb_list =[]
+pygame.time.set_timer(SPAWN_BOMB_EVENT,1000)
+
 
 def _create_bomb_surface(w,h):
   i = random.randint(1,3)
@@ -63,8 +63,8 @@ def _create_bomb_surface(w,h):
   return bomb_surface
 
 bomb_w, bomb_h = 50,50
-bomb = None
 running = True
+bomb_list =[]
 while running:
   clock.tick(60)  # Use Clock instead of delay for consistent frame pacing
   # event loop
@@ -77,9 +77,9 @@ while running:
         print("1 Key pressed:")
     elif event.type == SPAWN_BOMB_EVENT:
       bomb_surface = _create_bomb_surface(bomb_w,bomb_h)
-
       bomb_rec= pygame.Rect(random.randint(0,screen_width-bomb_w-1),0, bomb_w, bomb_h)
-      bomb = Bomb(bomb_rec, bomb_surface,vel = random.randint(5,10) )
+      bomb = Bomb(bomb_rec, bomb_surface,vel = random.randint(1,5) )
+      bomb_list.append(bomb)
       print("Bomb event triggered")
     ninja.handle_events(event)
 
@@ -90,24 +90,26 @@ while running:
   
   # Horizontal movement (available in both modes)
   ninja.update(keys, screen_width)
-  if bomb and bomb.active:
-    bomb.update(screen_height)
+  if len(bomb_list)!=0:
+    for bomb in bomb_list[:]:
+      if bomb.active:
+        bomb.update(screen_height)
+        if bomb.rec.colliderect(ninja.rec):
+          h.update()
+          hit_sound.play()
+          bomb.active = False
+      else:
+        bomb_list.remove(bomb)
     # check if bomb collides with ninja
-    if bomb.rec.colliderect(ninja.rec):
-    # if yes,
-      # decrement a heart from heath bar
-      h.update()
-      hit_sound.play()
-      # set bomb status not active
-      bomb.active = False
+    
+
 
   screen_surface.blit(sky_surface, (0,0))
   screen_surface.blit(grass_surface, (0,sky_raw_height))
   h.draw(screen_surface)
   # screen_surface.blit(current_ninja_surface, current_ninja_rect)
   ninja.draw(screen_surface)
-
-  if bomb:
+  for bomb in bomb_list:
     bomb.draw(screen_surface)
 
   pygame.display.update()
