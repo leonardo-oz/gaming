@@ -34,7 +34,7 @@ clock= pygame.time.Clock()
 
 
 # Create a Heath Bar 
-heart = pygame.image.load("pics/heart.jpeg")
+heart = pygame.image.load("pics/heart.png").convert_alpha()
 heart_surface= pygame.transform.scale(heart,(20,20))
 h= Heath_Bar_Heart(heart_surface,5,20,10)
 
