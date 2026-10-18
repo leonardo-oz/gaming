@@ -48,7 +48,10 @@ nj_file_dic = {
 
   }
 
-nj_ini_rec = pygame.Rect(screen_width//2,sky_raw_height-ninja_height//2+3,ninja_width,ninja_height)
+nj_ini_rec = pygame.Rect(screen_width//2,
+                        #  sky_raw_height-ninja_height//2+3,
+                        screen_height-ninja_height-10,
+                         ninja_width,ninja_height)
 ninja = Ninja(nj_ini_rec,nj_file_dic,vel=vel)
 SPAWN_BOMB_EVENT = pygame.USEREVENT + 1
 
@@ -78,7 +81,7 @@ while running:
     elif event.type == SPAWN_BOMB_EVENT:
       bomb_surface = _create_bomb_surface(bomb_w,bomb_h)
       bomb_rec= pygame.Rect(random.randint(0,screen_width-bomb_w-1),0, bomb_w, bomb_h)
-      bomb = Bomb(bomb_rec, bomb_surface,vel = random.randint(1,5) )
+      bomb = Bomb(bomb_rec, bomb_surface,vel = random.randint(1,5),acc=random.random())
       bomb_list.append(bomb)
       print("Bomb event triggered")
     ninja.handle_events(event)

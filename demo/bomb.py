@@ -1,10 +1,11 @@
 import pygame
 class Bomb:
 
-  def __init__(self,rec, bomb_surface, vel):
+  def __init__(self,rec, bomb_surface, vel,acc):
       self.rec = rec
       self.bomb_surface = bomb_surface
       self.vel = vel
+      self.acc = acc
       self.active = True
 
       
@@ -18,6 +19,7 @@ class Bomb:
 
   def update(self, screen_height):
       self.rec.y += self.vel
+      self.vel += self.acc
       if self.rec.y >= screen_height:
          self.active = False
       # end if
