@@ -32,6 +32,8 @@ class Health_Bar:
 
 class Heath_Bar_Heart:
 
+  MAX_LIVES = 5
+
   def __init__(self, icon: Surface, n_lives: int, draw_x: float, draw_y: float):
     self.icon = icon
     self.num_of_lives = n_lives
@@ -45,9 +47,10 @@ class Heath_Bar_Heart:
     # return number of lives remaining
     f"number of lives {self.num_of_lives}"
 
-  def update(self):
+  def update(self,v):
     # decrement by 1 if number of remaining lives > 0
-    self.num_of_lives = max(0, self.num_of_lives - 1)
+    if self.num_of_lives + v <= Heath_Bar_Heart.MAX_LIVES:
+      self.num_of_lives = max(0, self.num_of_lives + v)
 
   def draw(self, canvas: pygame.Surface):
     # draw a number of lives 

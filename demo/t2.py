@@ -1,7 +1,7 @@
 from health_bar import Health_Bar
 from health_bar import Heath_Bar_Heart
 from ninja import Ninja
-from bomb import Bomb
+from falling_object import Falling_Object
 import random
 
 import pygame
@@ -23,10 +23,9 @@ hit_sound = pygame.mixer.Sound("sounds/cartoon_music-bomb-explosion-large-amp-sh
 pygame.mixer.music.load("sounds/background_ninja.mp3")
 pygame.mixer.music.set_volume(0.3)
 pygame.mixer.music.play(loops=-1)
+
+
 ninja_width,ninja_height= 80,100
-
-
-
 vel=5
 clock= pygame.time.Clock()
 
@@ -53,10 +52,14 @@ nj_ini_rec = pygame.Rect(screen_width//2,
                         screen_height-ninja_height-10,
                          ninja_width,ninja_height)
 ninja = Ninja(nj_ini_rec,nj_file_dic,vel=vel)
+ninja_group = pygame.sprite.GroupSingle(ninja)
+
+
+
 SPAWN_BOMB_EVENT = pygame.USEREVENT + 1
-
 pygame.time.set_timer(SPAWN_BOMB_EVENT,1000)
-
+SPAWN_AID_EVENT = pygame.USEREVENT +2 
+pygame.time.set_timer(SPAWN_AID_EVENT, 5000)
 
 def _create_bomb_surface(w,h):
   i = random.randint(1,3)
@@ -65,9 +68,19 @@ def _create_bomb_surface(w,h):
 
   return bomb_surface
 
+
+def _create_aid_surface(w,h):
+  aid_surface_raw = pygame.image.load(f"pics/aid.png")
+  aid_surface = pygame.transform.scale(aid_surface_raw,(w,h))
+
+  return aid_surface
+
+
 bomb_w, bomb_h = 50,50
+aid_w, aid_h = 50,50
 running = True
-bomb_list =[]
+bomb_group = pygame.sprite.Group()
+aid_group = pygame.sprite.Group()
 while running:
   clock.tick(60)  # Use Clock instead of delay for consistent frame pacing
   # event loop
@@ -81,39 +94,46 @@ while running:
     elif event.type == SPAWN_BOMB_EVENT:
       bomb_surface = _create_bomb_surface(bomb_w,bomb_h)
       bomb_rec= pygame.Rect(random.randint(0,screen_width-bomb_w-1),0, bomb_w, bomb_h)
-      bomb = Bomb(bomb_rec, bomb_surface,vel = random.randint(1,5),acc=random.random())
-      bomb_list.append(bomb)
+      bomb = Falling_Object(bomb_rec, bomb_surface,vel = random.randint(1,5),acc=random.random())
+      bomb_group.add(bomb)
       print("Bomb event triggered")
+    elif event.type == SPAWN_AID_EVENT:
+      aid_surface = _create_aid_surface(aid_w, aid_h) 
+      aid_rec = pygame.Rect(random.randint(0,screen_width-aid_w-1),0, aid_w, aid_h)
+      aid = Falling_Object(aid_rec,aid_surface, vel = random.randint(1,5), acc=random.random())
+      aid_group.add(aid)
+
+    
     ninja.handle_events(event)
+
+  # End for 
 
 
   # hanldle key presses for movement
-  keys = pygame.key.get_pressed()
-
+  ninja_group.update(screen_width)
+  bomb_group.update(screen_height)
+  aid_group.update(screen_height)
   
-  # Horizontal movement (available in both modes)
-  ninja.update(keys, screen_width)
-  if len(bomb_list)!=0:
-    for bomb in bomb_list[:]:
-      if bomb.active:
-        bomb.update(screen_height)
-        if bomb.rec.colliderect(ninja.rec):
-          h.update()
-          hit_sound.play()
-          bomb.active = False
-      else:
-        bomb_list.remove(bomb)
-    # check if bomb collides with ninja
+
+  bomb_hits = pygame.sprite.spritecollide(ninja, bomb_group, dokill = True )
+  if bomb_hits:
+    for _ in bomb_hits:
+      h.update(-1)
+      hit_sound.play()
+
+  aid_hits = pygame.sprite.spritecollide(ninja, aid_group, dokill = True)
+  if aid_hits:
+    for _ in aid_hits:
+      h.update(1)
     
 
 
   screen_surface.blit(sky_surface, (0,0))
   screen_surface.blit(grass_surface, (0,sky_raw_height))
   h.draw(screen_surface)
-  # screen_surface.blit(current_ninja_surface, current_ninja_rect)
-  ninja.draw(screen_surface)
-  for bomb in bomb_list:
-    bomb.draw(screen_surface)
+  ninja_group.draw(screen_surface)
+  bomb_group.draw(screen_surface)
+  aid_group.draw(screen_surface)
 
   pygame.display.update()
 # End while

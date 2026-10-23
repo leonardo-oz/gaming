@@ -2,22 +2,29 @@
 from pygame.event import Event
 import pygame
 
-class Ninja:
+class Ninja(pygame.sprite.Sprite):
   def __init__(self,
                ninja_rect,
                status_file_dict,
                default_status="standing",
-               vel = 5):
-    self.rec = ninja_rect
+               vel = 5
+               
+               ):
+    super().__init__()
+    self.rect = ninja_rect
     self.status_surface_dict = self._create_status_surface_dic(status_file_dict)
     self.current_status = default_status
     self.vel = vel 
+
+  @property
+  def image(self):
+    return self.status_surface_dict[self.current_status]
 
   def _create_status_surface_dic( self, status_file_dict):
     status_dict= {}
     for k in status_file_dict:
       ninja=pygame.image.load(f"pics/{status_file_dict[k]}").convert_alpha()
-      ninja_surface=pygame.transform.scale(ninja,(self.rec.width, self.rec.height))
+      ninja_surface=pygame.transform.scale(ninja,(self.rect.width, self.rect.height))
       status_dict[k] = ninja_surface
     # end for key value
     return status_dict
@@ -71,25 +78,26 @@ class Ninja:
     # End method
 
     
-  def update(self,keys, screen_width: int):
+  def update(self, screen_width: int):
     # handle continuous event
+    keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-      self.rec.left -= self.vel
-      if self.rec.left <= 0:
-        self.rec.left = 0
+      self.rect.left -= self.vel
+      if self.rect.left <= 0:
+        self.rect.left = 0
         
-      print("Left pressed:", self.rec.left)
+      print("Left pressed:", self.rect.left)
             
     if keys[pygame.K_RIGHT]:
-      self.rec.right += self.vel
-      if self.rec.right>= screen_width:
-        self.rec.right = screen_width
+      self.rect.right += self.vel
+      if self.rect.right>= screen_width:
+        self.rect.right = screen_width
 
-      print("Right pressed:", self.rec.right)
+      print("Right pressed:", self.rect.right)
     
 
   def draw(self,canva):
-    canva.blit(self.status_surface_dict[self.current_status], self.rec)
+    canva.blit(self.status_surface_dict[self.current_status], self.rect)
   # End draw method
 
 
