@@ -2,6 +2,7 @@ from health_bar import Health_Bar
 from health_bar import Heath_Bar_Heart
 from ninja import Ninja
 from falling_object import Falling_Object
+from ninja_config import NinjaState
 import random
 
 import pygame
@@ -37,16 +38,16 @@ clock= pygame.time.Clock()
 # Create a Heath Bar 
 heart = pygame.image.load("pics/heart.png").convert_alpha()
 heart_surface= pygame.transform.scale(heart,(20,20))
-h= Heath_Bar_Heart(heart_surface,5,20,10)
+h= Heath_Bar_Heart(heart_surface,20,10)
 
 # Create a ninja object
 nj_file_dic = {
-    "standing": "nj_stand.png",
-    "running_right": "nj_run_right.png",
-    "running_left": "nj_run_left.png",
-    "meditating": "nj_meditaing.png",
-    "bruce_lee": "nj_brucelee.png",
-    "dead": "nj_dead.png"
+    NinjaState.STANDING: "nj_stand.png",
+    NinjaState.RUNNING_RIGHT: "nj_run_right.png",
+    NinjaState.RUNNING_LEFT: "nj_run_left.png",
+    NinjaState.MEDITATING: "nj_meditaing.png",
+    NinjaState.BRUCE_LEE: "nj_brucelee.png",
+    NinjaState.DEAD: "nj_dead.png"
 
   }
 
@@ -137,16 +138,16 @@ while running:
   bomb_hits = pygame.sprite.spritecollide(ninja, bomb_group, dokill = True )
   if bomb_hits:
     for _ in bomb_hits:
-      h.update(-1)
+      ninja.update_lives(-1)
       bomb_hit_sound.play()
-      if h.num_of_lives<=0:
+      if ninja.num_of_lives<=0:
           ninja.ends()
           print(ninja)
 
   aid_hits = pygame.sprite.spritecollide(ninja, aid_group, dokill = True)
   if aid_hits:
     for _ in aid_hits:
-      h.update(1)
+      ninja.update_lives(1)
       aid_hit_sound.play()
   # end if
   treasure_hits = pygame.sprite.spritecollide(ninja, treasure_group, dokill = True)
@@ -159,7 +160,7 @@ while running:
 
   screen_surface.blit(sky_surface, (0,0))
   screen_surface.blit(grass_surface, (0,sky_raw_height))
-  h.draw(screen_surface)
+  h.draw(screen_surface,ninja.num_of_lives)
   ninja_group.draw(screen_surface)
   bomb_group.draw(screen_surface)
   aid_group.draw(screen_surface)

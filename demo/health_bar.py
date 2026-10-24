@@ -32,30 +32,30 @@ class Health_Bar:
 
 class Heath_Bar_Heart:
 
-  MAX_LIVES = 5
 
-  def __init__(self, icon: Surface, n_lives: int, draw_x: float, draw_y: float):
+
+  def __init__(self, icon: Surface, draw_x: float, draw_y: float):
     self.icon = icon
-    self.num_of_lives = n_lives
+    # self.num_of_lives = n_lives
     self.draw_x = draw_x
     self.draw_y = draw_y
     
     pass
 
 
-  def __str__(self):
-    # return number of lives remaining
-    f"number of lives {self.num_of_lives}"
+  # def __str__(self):
+  #   # return number of lives remaining
+  #   f"number of lives {self.num_of_lives}"
 
-  def update(self,v):
-    # decrement by 1 if number of remaining lives > 0
-    if self.num_of_lives + v <= Heath_Bar_Heart.MAX_LIVES:
-      self.num_of_lives = max(0, self.num_of_lives + v)
+  # def update(self,v):
+  #   # decrement by 1 if number of remaining lives > 0
+  #   if self.num_of_lives + v <= Heath_Bar_Heart.MAX_LIVES:
+  #     self.num_of_lives = max(0, self.num_of_lives + v) 
 
-  def draw(self, canvas: pygame.Surface):
+  def draw(self, canvas: pygame.Surface, num_of_lives):
     # draw a number of lives 
-    if self.num_of_lives > 0:  
-      for i in range(self.num_of_lives):
+    if num_of_lives > 0:  
+      for i in range(num_of_lives):
         canvas.blit(self.icon,(self.draw_x+self.draw_x*i,self.draw_y))
 
 
