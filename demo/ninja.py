@@ -1,12 +1,16 @@
 
 from pygame.event import Event
 import pygame
+from ninja_config import NinjaState
+
 
 class Ninja(pygame.sprite.Sprite):
+  MAX_LIVES = 5
+
   def __init__(self,
                ninja_rect,
                status_file_dict,
-               default_status="standing",
+               default_status=NinjaState.STANDING,
                vel = 5
                
                ):
@@ -15,7 +19,9 @@ class Ninja(pygame.sprite.Sprite):
     self.status_surface_dict = self._create_status_surface_dic(status_file_dict)
     self.current_status = default_status
     self.vel = vel 
+    self.num_of_lives = Ninja.MAX_LIVES
 
+  
   @property
   def image(self):
     return self.status_surface_dict[self.current_status]
@@ -34,53 +40,58 @@ class Ninja(pygame.sprite.Sprite):
 
 
   def __str__(self):
-    return f"current status: {self.current_status}, position: {self.rec.x},{self.rec.y}, current speed: {self.vel}"
+    return f"current status: {self.current_status}, position: {self.rect.x},{self.rect.y}, current speed: {self.vel}"
     
 
 
   def handle_events(self,event: Event):
     """handle discrete (single-press / release) events."""
 
+    if self.current_status == NinjaState.DEAD:
+      return 
 
-    if event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_LEFT:
-        self.current_status= "running_left"
-        print("Left Key Down pressed:", event.key)
-      elif event.key == pygame.K_RIGHT:
-        self.current_status= "running_right"
-        print("Right Key Down pressed:", event.key)
-      elif event.key == pygame.K_DOWN:
-        self.current_status= "meditating"
-        print("Down Key pressed:", event.key)
-      
-      
+    if self.current_status != NinjaState.DEAD:
+      if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_LEFT:
+          self.current_status= NinjaState.RUNNING_LEFT
+          print("Left Key Down pressed:", event.key)
+        elif event.key == pygame.K_RIGHT:
+          self.current_status= NinjaState.RUNNING_RIGHT
+          print("Right Key Down pressed:", event.key)
+        elif event.key == pygame.K_DOWN:
+          self.current_status= NinjaState.MEDITATING
+          print("Down Key pressed:", event.key)
+      # End if event.type == pygame.KEYDOWN:
+       
+      elif event.type == pygame.KEYUP:
+        print("Key Up pressed:", event.key)
+        if event.key in (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN):
+          self.current_status= NinjaState.STANDING
 
+      elif event.type == pygame.MOUSEBUTTONDOWN:
+        print("Mouse Button Down pressed:", event.button)
+        if self.rect.collidepoint(event.pos):
+          self.current_status= NinjaState.BRUCE_LEE
 
-
-    elif event.type == pygame.KEYUP:
-      print("Key Up pressed:", event.key)
-      if event.key in (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN):
-        self.current_status= "standing"
-
-
-    elif event.type == pygame.MOUSEBUTTONDOWN:
-      print("Mouse Button Down pressed:", event.button)
-      if self.rec.collidepoint(event.pos):
-        self.current_status= "bruce_lee"
-
-
-    elif event.type == pygame.MOUSEBUTTONUP:
-      print("Mouse Button Up pressed:", event.button)
-      if self.current_status == "bruce_lee":
-        self.current_status= "standing"
-
+      elif event.type == pygame.MOUSEBUTTONUP:
+        print("Mouse Button Up pressed:", event.button)
+        if self.current_status == NinjaState.BRUCE_LEE:
+          self.current_status= NinjaState.STANDING
+    # End if self.current_status != NinjaState.DEAD:
 
     # End method
 
-    
+  def ends(self):
+    self.current_status = NinjaState.DEAD
+
+     
+  
   def update(self, screen_width: int):
     # handle continuous event
     keys = pygame.key.get_pressed()
+
+    if self.current_status == NinjaState.DEAD:
+      return 
     if keys[pygame.K_LEFT]:
       self.rect.left -= self.vel
       if self.rect.left <= 0:
@@ -94,11 +105,17 @@ class Ninja(pygame.sprite.Sprite):
         self.rect.right = screen_width
 
       print("Right pressed:", self.rect.right)
+  # end method update
+
+
+  def update_lives(self,v):
+    if self.num_of_lives + v <= Ninja.MAX_LIVES:
+      self.num_of_lives = max(0, self.num_of_lives + v) 
     
 
-  def draw(self,canva):
-    canva.blit(self.status_surface_dict[self.current_status], self.rect)
-  # End draw method
+  # def draw(self,canva):
+  #   canva.blit(self.status_surface_dict[self.current_status], self.rect)
+  # # End draw method
 
 
 if __name__ == "__main__":
