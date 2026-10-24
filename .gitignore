@@ -1,0 +1,16 @@
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python bytecode & cache
+__pycache__/
+*.pyc
+
+# VS Code settings or temporary files
+.vscode/
+*.log
+*.tmp
+
+# OS generated files
+.DS_Store
