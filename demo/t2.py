@@ -45,7 +45,8 @@ nj_file_dic = {
     "running_right": "nj_run_right.png",
     "running_left": "nj_run_left.png",
     "meditating": "nj_meditaing.png",
-    "bruce_lee": "nj_brucelee.png"
+    "bruce_lee": "nj_brucelee.png",
+    "dead": "nj_dead.png"
 
   }
 
@@ -59,7 +60,7 @@ ninja_group = pygame.sprite.GroupSingle(ninja)
 
 
 SPAWN_BOMB_EVENT = pygame.USEREVENT + 1
-pygame.time.set_timer(SPAWN_BOMB_EVENT,2500)
+pygame.time.set_timer(SPAWN_BOMB_EVENT,2000)
 SPAWN_AID_EVENT = pygame.USEREVENT +2 
 pygame.time.set_timer(SPAWN_AID_EVENT, 5000)
 SPAWN_TREASURE_EVENT = pygame.USEREVENT +3 
@@ -106,18 +107,18 @@ while running:
     elif event.type == SPAWN_BOMB_EVENT:
       bomb_surface = _create_bomb_surface(bomb_w,bomb_h)
       bomb_rec= pygame.Rect(random.randint(0,screen_width-bomb_w-1),0, bomb_w, bomb_h)
-      bomb = Falling_Object(bomb_rec, bomb_surface,vel = random.randint(1,5),acc=random.random())
+      bomb = Falling_Object(bomb_rec, bomb_surface,vel = random.randint(1,4),acc=random.random())
       bomb_group.add(bomb)
       print("Bomb event triggered")
     elif event.type == SPAWN_AID_EVENT:
       aid_surface = _create_aid_surface(aid_w, aid_h) 
       aid_rec = pygame.Rect(random.randint(0,screen_width-aid_w-1),0, aid_w, aid_h)
-      aid = Falling_Object(aid_rec,aid_surface, vel = random.randint(1,5), acc=random.random())
+      aid = Falling_Object(aid_rec,aid_surface, vel = random.randint(1,3), acc=random.random())
       aid_group.add(aid)
     elif event.type == SPAWN_TREASURE_EVENT:
       treasure_surface = _create_treasure_surface(t_w, t_h) 
       treasure_rec = pygame.Rect(random.randint(0,screen_width-t_w-1),0, t_w, t_h)
-      treasure = Falling_Object(treasure_rec,treasure_surface, vel = random.randint(1,5), acc=random.random())
+      treasure = Falling_Object(treasure_rec,treasure_surface, vel = random.randint(1,3), acc=random.random())
       treasure_group.add(treasure)
 
     
@@ -138,6 +139,9 @@ while running:
     for _ in bomb_hits:
       h.update(-1)
       bomb_hit_sound.play()
+      if h.num_of_lives<=0:
+          ninja.ends()
+          print(ninja)
 
   aid_hits = pygame.sprite.spritecollide(ninja, aid_group, dokill = True)
   if aid_hits:
