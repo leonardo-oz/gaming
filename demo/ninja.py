@@ -34,24 +34,27 @@ class Ninja(pygame.sprite.Sprite):
 
 
   def __str__(self):
-    return f"current status: {self.current_status}, position: {self.rec.x},{self.rec.y}, current speed: {self.vel}"
+    return f"current status: {self.current_status}, position: {self.rect.x},{self.rect.y}, current speed: {self.vel}"
     
 
 
   def handle_events(self,event: Event):
     """handle discrete (single-press / release) events."""
 
+    if self.current_status == "dead":
+      return 
 
-    if event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_LEFT:
-        self.current_status= "running_left"
-        print("Left Key Down pressed:", event.key)
-      elif event.key == pygame.K_RIGHT:
-        self.current_status= "running_right"
-        print("Right Key Down pressed:", event.key)
-      elif event.key == pygame.K_DOWN:
-        self.current_status= "meditating"
-        print("Down Key pressed:", event.key)
+    if self.current_status != "dead":
+      if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_LEFT:
+          self.current_status= "running_left"
+          print("Left Key Down pressed:", event.key)
+        elif event.key == pygame.K_RIGHT:
+          self.current_status= "running_right"
+          print("Right Key Down pressed:", event.key)
+        elif event.key == pygame.K_DOWN:
+          self.current_status= "meditating"
+          print("Down Key pressed:", event.key)
       
       
 
@@ -77,10 +80,17 @@ class Ninja(pygame.sprite.Sprite):
 
     # End method
 
-    
+  def ends(self):
+    self.current_status = "dead"
+
+     
+  
   def update(self, screen_width: int):
     # handle continuous event
     keys = pygame.key.get_pressed()
+
+    if self.current_status == "dead":
+      return 
     if keys[pygame.K_LEFT]:
       self.rect.left -= self.vel
       if self.rect.left <= 0:
