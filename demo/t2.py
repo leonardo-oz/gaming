@@ -3,6 +3,7 @@ from health_bar import Heath_Bar_Heart
 from ninja import Ninja
 from falling_object import Falling_Object
 from ninja_config import NinjaState
+from explosive import Explosive
 import random
 
 import pygame
@@ -31,7 +32,7 @@ pygame.mixer.music.play(loops=-1)
 ninja_width,ninja_height= 80,100
 vel=5
 clock= pygame.time.Clock()
-
+fps = 60
 
 
 
@@ -50,6 +51,9 @@ nj_file_dic = {
     NinjaState.DEAD: "nj_dead.png"
 
   }
+
+
+
 
 nj_ini_rec = pygame.Rect(screen_width//2,
                         #  sky_raw_height-ninja_height//2+3,
@@ -81,6 +85,23 @@ def _create_treasure_surface(w,h):
   return treasure_surface
 
 
+def _create_explosive_surface_list(w,h,num_repeats=1):
+  l = []
+  for i in range(0,4):
+    for j in range(0,num_repeats):
+      explosive_surface_raw = pygame.image.load(f"pics/explosive_{i}.png")
+      explosive_surface = pygame.transform.scale(explosive_surface_raw,(w,h))
+      l.append(explosive_surface)
+  return l
+# End method
+
+
+explosive_surface_list = []
+explosive_w, explosive_h=100,100
+
+
+
+
 def _create_aid_surface(w,h):
   aid_surface_raw = pygame.image.load(f"pics/aid.png")
   aid_surface = pygame.transform.scale(aid_surface_raw,(w,h))
@@ -91,12 +112,19 @@ def _create_aid_surface(w,h):
 bomb_w, bomb_h = 50,50
 aid_w, aid_h = 50,50
 t_w , t_h = 50,50
+
+
 running = True
 bomb_group = pygame.sprite.Group()
 aid_group = pygame.sprite.Group()
 treasure_group = pygame.sprite.Group()
+explosive_group = pygame.sprite.Group()
+explosive_frames = _create_explosive_surface_list(explosive_w,explosive_h,3)
+
+
+
 while running:
-  clock.tick(60)  # Use Clock instead of delay for consistent frame pacing
+  clock.tick(fps)  # Use Clock instead of delay for consistent frame pacing
   # event loop
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
@@ -133,13 +161,22 @@ while running:
   bomb_group.update(screen_height)
   aid_group.update(screen_height)
   treasure_group.update(screen_height)
+  explosive_group.update()
   
 
   bomb_hits = pygame.sprite.spritecollide(ninja, bomb_group, dokill = True )
   if bomb_hits:
+  
     for _ in bomb_hits:
       ninja.update_lives(-1)
       bomb_hit_sound.play()
+
+      # create explosive
+      explosive_rec= pygame.Rect(bomb.rect.x,bomb.rect.y,explosive_w , explosive_w)
+      explosive = Explosive(explosive_rec, explosive_frames)
+      explosive_group.add(explosive)
+      
+      
       if ninja.num_of_lives<=0:
           ninja.ends()
           print(ninja)
@@ -164,7 +201,10 @@ while running:
   ninja_group.draw(screen_surface)
   bomb_group.draw(screen_surface)
   aid_group.draw(screen_surface)
+  explosive_group.draw(screen_surface)
   treasure_group.draw(screen_surface)
 
   pygame.display.update()
 # End while
+
+pygame.quit()
