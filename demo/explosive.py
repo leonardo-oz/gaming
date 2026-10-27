@@ -14,8 +14,6 @@ class Explosive(pygame.sprite.Sprite):
         return f"position at {self.rect.x},{self.rect.y}, image  position: {self.curr_i}"
 
     def update(self):
-        print(self.__str__())
-
         if self.curr_i >= len(self.surface_list):
             self.kill()
         else:
