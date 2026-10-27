@@ -113,11 +113,6 @@ class Ninja(pygame.sprite.Sprite):
       self.num_of_lives = max(0, self.num_of_lives + v) 
     
 
-  # def draw(self,canva):
-  #   canva.blit(self.status_surface_dict[self.current_status], self.rect)
-  # # End draw method
-
-
 if __name__ == "__main__":
   pygame.init()
   screen  = pygame.display.set_mode((800,600))
