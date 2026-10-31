@@ -11,7 +11,7 @@ pygame.init()
 pygame.mixer.init()
 
 
-screen_width, screen_height = 800,600
+screen_width, screen_height = 1200,600
 screen_surface = pygame.display.set_mode((screen_width, screen_height))
 
 sky_surface_raw = pygame.image.load("pics/sky.png")
