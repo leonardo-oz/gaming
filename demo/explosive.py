@@ -23,11 +23,3 @@ class Explosive(pygame.sprite.Sprite):
 
 # End class
 
-if __name__ == "__main__":
-    pygame.init()
-    screen  = pygame.display.set_mode((800,600))
-
-    explosive_rec= pygame.Rect(0,0,25,25)
-    explosive_surface_list = []
-    explosive = Explosive(explosive_rec,explosive_surface_list)
-    print(explosive)

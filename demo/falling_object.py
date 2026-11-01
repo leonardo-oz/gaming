@@ -98,12 +98,12 @@ class Aid(Falling_Object):
 	# End setup_resources method
 
 	def __init__(self, screen_width: int,
-						 bomb_width: int = 50, bomb_height: int = 50
+						 aid_width: int = 50, aid_height: int = 50
 					):
 
 		surface = random.choice(Aid.surfaces)
-		x_pos = random.randint(0,screen_width-bomb_width-1)
-		rec = pygame.Rect(x_pos,0,bomb_width,bomb_height)
+		x_pos = random.randint(0,screen_width-aid_width-1)
+		rec = pygame.Rect(x_pos,0,aid_width,aid_height)
 		vel = random.randint(1,4)
 		acc = random.uniform(0,1)
 		super().__init__(rec, surface, vel, acc)

@@ -15,7 +15,6 @@ class Ninja(pygame.sprite.Sprite):
                
                ):
     super().__init__()
-    self.initial_rec
     self.rect = ninja_rect
     self.status_surface_dict = self._create_status_surface_dic(status_file_dict)
     self.default_status = default_status
