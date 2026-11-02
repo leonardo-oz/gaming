@@ -54,30 +54,22 @@ class Ninja(pygame.sprite.Sprite):
 
     if not self.is_alive:
       return 
-    
-    if event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_LEFT:
-        self.current_status= NinjaState.RUNNING_LEFT
-        print("Left Key Down pressed:", event.key)
-      elif event.key == pygame.K_RIGHT:
-        self.current_status= NinjaState.RUNNING_RIGHT
-        print("Right Key Down pressed:", event.key)
-      elif event.key == pygame.K_DOWN:
-        self.current_status= NinjaState.MEDITATING
-        print("Down Key pressed:", event.key)
-        
-    elif event.type == pygame.KEYUP:
-      print("Key Up pressed:", event.key)
-      if event.key in (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN):
-        self.current_status= NinjaState.STANDING
 
-    elif event.type == pygame.MOUSEBUTTONDOWN:
-      print("Mouse Button Down pressed:", event.button)
+    # 1. Meditate: Only K_DOWN triggers and cancels it
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+      self.current_status= NinjaState.MEDITATING
+
+      
+    elif event.type == pygame.KEYUP and event.key == pygame.K_DOWN:
+        if self.current_status == NinjaState.MEDITATING:
+          self.current_status= NinjaState.STANDING
+
+    # 2. Bruce Lee Pose: Only Left Mouse Click (button == 1) on sprite
+    elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
       if self.rect.collidepoint(event.pos):
         self.current_status= NinjaState.BRUCE_LEE
 
-    elif event.type == pygame.MOUSEBUTTONUP:
-      print("Mouse Button Up pressed:", event.button)
+    elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
       if self.current_status == NinjaState.BRUCE_LEE:
         self.current_status= NinjaState.STANDING
 
@@ -85,24 +77,26 @@ class Ninja(pygame.sprite.Sprite):
 
   
   def update(self, screen_width: int):
-
+    """Handles movement and keeps running animations perfectly synced every frame."""
     if not self.is_alive:
       return 
+
+    # Do not allow movement keys to override special postures
+    if self.current_status in (NinjaState.MEDITATING, NinjaState.BRUCE_LEE):
+            return
 
     # handle continuous event
     keys = pygame.key.get_pressed()
 
-    if keys[pygame.K_LEFT]:
-      self.rect.left -= self.vel
-      if self.rect.left <= 0:
-        self.rect.left = 0
-        
-      print("Left pressed:", self.rect.left)
-            
-    if keys[pygame.K_RIGHT]:
-      self.rect.right += self.vel
-      if self.rect.right>= screen_width:
-        self.rect.right = screen_width
+    if keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]:
+      self.rect.left = max(0, self.rect.left - self.vel)
+      self.current_status = NinjaState.RUNNING_LEFT
+                    
+    elif keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
+      self.rect.right = min(screen_width, self.rect.right + self.vel)
+      self.current_status = NinjaState.RUNNING_RIGHT
+    else:
+      self.current_status = NinjaState.STANDING
 
   # end update method 
 

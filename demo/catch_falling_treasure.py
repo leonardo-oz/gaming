@@ -13,7 +13,7 @@ def main():
     screen_surface = pygame.display.set_mode((screen_width, screen_height))
     
     sky_surface_raw = pygame.image.load("pics/sky.png")
-    sky_raw_width, sky_raw_height = sky_surface_raw.get_size()
+    _, sky_raw_height = sky_surface_raw.get_size()
     sky_surface = pygame.transform.scale(sky_surface_raw, (screen_width, sky_raw_height))
     grass_surface_raw = pygame.image.load("pics/grass.png")
     grass_surface= pygame.transform.scale(grass_surface_raw, (screen_width,screen_height-sky_raw_height))
