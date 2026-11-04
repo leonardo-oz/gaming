@@ -6,31 +6,57 @@ from ninja_config import NinjaState
 
 class Ninja(pygame.sprite.Sprite):
   MAX_LIVES = 5
+  status_surface_dict = None
 
   def __init__(self,
-               ninja_rect,
-               status_file_dict,
+               ninja_rect: pygame.Rect,
                default_status=NinjaState.STANDING,
                vel = 5
                
                ):
     super().__init__()
     self.rect = ninja_rect
-    self.status_surface_dict = self._create_status_surface_dic(status_file_dict)
+    if not Ninja.status_surface_dict:
+      Ninja.setup(*ninja_rect.size)
+
     self.current_status = default_status
     self.vel = vel 
     self.num_of_lives = Ninja.MAX_LIVES
+    self.score = 0
 
   
   @property
   def image(self):
     return self.status_surface_dict[self.current_status]
+  @property
+  def is_alive(self):
+    if self.num_of_lives <= 0:
+      return False
+    # end if
+  # end method
 
-  def _create_status_surface_dic( self, status_file_dict):
+  @classmethod
+  def setup(cls,nj_width, nj_height):
+    # Create a ninja object
+    nj_file_dic = {
+        NinjaState.STANDING: "nj_stand.png",
+        NinjaState.RUNNING_RIGHT: "nj_run_right.png",
+        NinjaState.RUNNING_LEFT: "nj_run_left.png",
+        NinjaState.MEDITATING: "nj_meditaing.png",
+        NinjaState.BRUCE_LEE: "nj_brucelee.png",
+        NinjaState.DEAD: "nj_dead.png"
+
+      }
+    cls.status_surface_dict = cls._create_status_surface_dic(nj_file_dic,nj_width, nj_height)
+  # End setup
+
+
+  @classmethod
+  def _create_status_surface_dic(cls, status_file_dict,nj_w,nj_h):
     status_dict= {}
     for k in status_file_dict:
       ninja=pygame.image.load(f"pics/{status_file_dict[k]}").convert_alpha()
-      ninja_surface=pygame.transform.scale(ninja,(self.rect.width, self.rect.height))
+      ninja_surface=pygame.transform.scale(ninja,(nj_w, nj_h))
       status_dict[k] = ninja_surface
     # end for key value
     return status_dict
@@ -105,8 +131,14 @@ class Ninja(pygame.sprite.Sprite):
 
 
   def update_lives(self,v):
-    if self.num_of_lives + v <= Ninja.MAX_LIVES:
+    if self.is_alive:
       self.num_of_lives = max(0, self.num_of_lives + v) 
+      if self.num_of_lives == 0:
+        self.current_status== NinjaState.DEAD
+
+    # end if self.is_alive:
+  # end update_lives method
+      
     
 
 if __name__ == "__main__":
@@ -123,7 +155,7 @@ if __name__ == "__main__":
 
   nj_ini_rec = pygame.Rect(10,10,80,100)
 
-  ninja = Ninja(nj_ini_rec,nj_file_dic)
+  ninja = Ninja(nj_ini_rec)
   
 
   for k in ninja.status_surface_dict:
