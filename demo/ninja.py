@@ -50,33 +50,33 @@ class Ninja(pygame.sprite.Sprite):
     if self.current_status == NinjaState.DEAD:
       return 
 
-    if self.current_status != NinjaState.DEAD:
-      if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_LEFT:
-          self.current_status= NinjaState.RUNNING_LEFT
-          print("Left Key Down pressed:", event.key)
-        elif event.key == pygame.K_RIGHT:
-          self.current_status= NinjaState.RUNNING_RIGHT
-          print("Right Key Down pressed:", event.key)
-        elif event.key == pygame.K_DOWN:
-          self.current_status= NinjaState.MEDITATING
-          print("Down Key pressed:", event.key)
-      # End if event.type == pygame.KEYDOWN:
+    # if self.current_status != NinjaState.DEAD:
+    #   if event.type == pygame.KEYDOWN:
+    #     if event.key == pygame.K_LEFT:
+    #       self.current_status= NinjaState.RUNNING_LEFT
+    #       print("Left Key Down pressed:", event.key)                                    
+    #     elif event.key == pygame.K_RIGHT: 
+    #       self.current_status= NinjaState.RUNNING_RIGHT
+    #       print("Right Key Down pressed:", event.key)
+    #     elif event.key == pygame.K_DOWN:
+    #       self.current_status= NinjaState.MEDITATING
+    #       print("Down Key pressed:", event.key)
+    #   # End if event.type == pygame.KEYDOWN:
        
-      elif event.type == pygame.KEYUP:
-        print("Key Up pressed:", event.key)
-        if event.key in (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN):
-          self.current_status= NinjaState.STANDING
+    if event.type == pygame.KEYUP:
+      print("Key Up pressed:", event.key)
+      if event.key in (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN):
+        self.current_status= NinjaState.STANDING
 
-      elif event.type == pygame.MOUSEBUTTONDOWN:
-        print("Mouse Button Down pressed:", event.button)
-        if self.rect.collidepoint(event.pos):
-          self.current_status= NinjaState.BRUCE_LEE
+    elif event.type == pygame.MOUSEBUTTONDOWN:
+      print("Mouse Button Down pressed:", event.button)
+      if self.rect.collidepoint(event.pos):
+        self.current_status= NinjaState.BRUCE_LEE
 
-      elif event.type == pygame.MOUSEBUTTONUP:
-        print("Mouse Button Up pressed:", event.button)
-        if self.current_status == NinjaState.BRUCE_LEE:
-          self.current_status= NinjaState.STANDING
+    elif event.type == pygame.MOUSEBUTTONUP:
+      print("Mouse Button Up pressed:", event.button)
+      if self.current_status == NinjaState.BRUCE_LEE:
+        self.current_status= NinjaState.STANDING
     # End if self.current_status != NinjaState.DEAD:
 
     # End method
@@ -92,18 +92,14 @@ class Ninja(pygame.sprite.Sprite):
 
     if self.current_status == NinjaState.DEAD:
       return 
-    if keys[pygame.K_LEFT]:
-      self.rect.left -= self.vel
-      if self.rect.left <= 0:
-        self.rect.left = 0
-        
+    if keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]:
+      self.current_status= NinjaState.RUNNING_LEFT
+      self.rect.left = max(0, self.rect.left - self.vel)
       print("Left pressed:", self.rect.left)
             
-    if keys[pygame.K_RIGHT]:
-      self.rect.right += self.vel
-      if self.rect.right>= screen_width:
-        self.rect.right = screen_width
-
+    if keys[pygame.K_RIGHT]and not keys[pygame.K_LEFT]:
+      self.current_status = NinjaState.RUNNING_RIGHT
+      self.rect.right = min(screen_width,self.rect.right + self.vel)
       print("Right pressed:", self.rect.right)
   # end method update
 
