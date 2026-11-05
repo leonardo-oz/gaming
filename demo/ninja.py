@@ -22,18 +22,25 @@ class Ninja(pygame.sprite.Sprite):
     self.current_status = default_status
     self.vel = vel 
     self.num_of_lives = Ninja.MAX_LIVES
-    self.score = 0
+    self._score = 0
 
   
   @property
   def image(self):
-    return self.status_surface_dict[self.current_status]
+    return Ninja.status_surface_dict[self.current_status]
   @property
+
   def is_alive(self):
-    if self.num_of_lives <= 0:
+    if self.num_of_lives == 0:
       return False
+    else:
+      return True
     # end if
   # end method
+
+  @property
+  def score(self) ->int:
+    return self._score
 
   @classmethod
   def setup(cls,nj_width, nj_height):
@@ -135,9 +142,23 @@ class Ninja(pygame.sprite.Sprite):
       self.num_of_lives = max(0, self.num_of_lives + v) 
       if self.num_of_lives == 0:
         self.current_status== NinjaState.DEAD
+      
 
     # end if self.is_alive:
   # end update_lives method
+
+
+  def update_score(self, v):
+    if self.is_alive:
+      self._score+=v
+    else:
+      return
+
+    # end if not self.is_alive
+  # end method update score
+
+
+      
       
     
 

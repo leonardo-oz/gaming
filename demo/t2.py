@@ -4,6 +4,7 @@ from ninja import Ninja
 from falling_object import Falling_Object
 from ninja_config import NinjaState
 from explosive import Explosive
+from score_board import ScoreBoared
 import random
 
 import pygame
@@ -41,6 +42,9 @@ heart = pygame.image.load("pics/heart.png").convert_alpha()
 heart_surface= pygame.transform.scale(heart,(20,20))
 h= Heath_Bar_Heart(heart_surface,20,10)
 
+score_board = ScoreBoared(pygame.Rect(screen_width-200,0,200,100))
+
+
 # Create a ninja object
 nj_file_dic = {
     NinjaState.STANDING: "nj_stand.png",
@@ -59,7 +63,7 @@ nj_ini_rec = pygame.Rect(screen_width//2,
                         #  sky_raw_height-ninja_height//2+3,
                         screen_height-ninja_height-10,
                          ninja_width,ninja_height)
-ninja = Ninja(nj_ini_rec,nj_file_dic,vel=vel)
+ninja = Ninja(nj_ini_rec,vel=vel)
 ninja_group = pygame.sprite.GroupSingle(ninja)
 
 
@@ -190,6 +194,7 @@ while running:
   treasure_hits = pygame.sprite.spritecollide(ninja, treasure_group, dokill = True)
   if treasure_hits:
     for _ in treasure_hits:
+      ninja.update_score(1)
       treasure_hit_sound.play()
   # end if
     
@@ -203,6 +208,7 @@ while running:
   aid_group.draw(screen_surface)
   explosive_group.draw(screen_surface)
   treasure_group.draw(screen_surface)
+  score_board.draw(screen_surface,ninja.score)
 
   pygame.display.update()
 # End while
