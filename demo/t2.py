@@ -1,7 +1,7 @@
 from health_bar import Health_Bar
 from health_bar import Heath_Bar_Heart
 from ninja import Ninja
-from falling_object import Falling_Object
+from falling_object import Bomb,Aid,Treasure
 from ninja_config import NinjaState
 from explosive import Explosive
 from score_board import ScoreBoared
@@ -22,9 +22,9 @@ sky_surface = pygame.transform.scale(sky_surface_raw, (screen_width, sky_raw_hei
 grass_surface_raw = pygame.image.load("pics/grass.png")
 grass_surface= pygame.transform.scale(grass_surface_raw, (screen_width,screen_height-sky_raw_height))
 
-bomb_hit_sound = pygame.mixer.Sound("sounds/cartoon_music-bomb-explosion-large-amp-short-517328.mp3")
-aid_hit_sound = pygame.mixer.Sound("sounds/heal.mp3")
-treasure_hit_sound= pygame.mixer.Sound("sounds/coin.mp3")
+# bomb_hit_sound = pygame.mixer.Sound("sounds/cartoon_music-bomb-explosion-large-amp-short-517328.mp3")
+# aid_hit_sound = pygame.mixer.Sound("sounds/heal.mp3")
+# treasure_hit_sound= pygame.mixer.Sound("sounds/coin.mp3")
 pygame.mixer.music.load("sounds/background_ninja.mp3")
 pygame.mixer.music.set_volume(0.3)
 pygame.mixer.music.play(loops=-1)
@@ -74,19 +74,19 @@ SPAWN_AID_EVENT = pygame.USEREVENT +2
 pygame.time.set_timer(SPAWN_AID_EVENT, 5000)
 SPAWN_TREASURE_EVENT = pygame.USEREVENT +3 
 pygame.time.set_timer(SPAWN_TREASURE_EVENT, 3000)
-def _create_bomb_surface(w,h):
-  i = random.randint(1,3)
-  bomb_surface_raw = pygame.image.load(f"pics/bomb_{i}.png")
-  bomb_surface = pygame.transform.scale(bomb_surface_raw,(w,h))
+# def _create_bomb_surface(w,h):
+#   i = random.randint(1,3)
+#   bomb_surface_raw = pygame.image.load(f"pics/bomb_{i}.png")
+#   bomb_surface = pygame.transform.scale(bomb_surface_raw,(w,h))
 
-  return bomb_surface
+#   return bomb_surface
 
-def _create_treasure_surface(w,h):
-  i = random.randint(1,3)
-  treasure_surface_raw = pygame.image.load(f"pics/treasure_{i}.png")
-  treasure_surface = pygame.transform.scale(treasure_surface_raw,(w,h))
+# def _create_treasure_surface(w,h):
+#   i = random.randint(1,3)
+#   treasure_surface_raw = pygame.image.load(f"pics/treasure_{i}.png")
+#   treasure_surface = pygame.transform.scale(treasure_surface_raw,(w,h))
 
-  return treasure_surface
+#   return treasure_surface
 
 
 def _create_explosive_surface_list(w,h,num_repeats=1):
@@ -100,17 +100,17 @@ def _create_explosive_surface_list(w,h,num_repeats=1):
 # End method
 
 
-explosive_surface_list = []
-explosive_w, explosive_h=100,100
+# explosive_surface_list = []
+# explosive_w, explosive_h=100,100
 
 
 
 
-def _create_aid_surface(w,h):
-  aid_surface_raw = pygame.image.load(f"pics/aid.png")
-  aid_surface = pygame.transform.scale(aid_surface_raw,(w,h))
+# def _create_aid_surface(w,h):
+#   aid_surface_raw = pygame.image.load(f"pics/aid.png")
+#   aid_surface = pygame.transform.scale(aid_surface_raw,(w,h))
 
-  return aid_surface
+#   return aid_surface
 
 
 bomb_w, bomb_h = 50,50
@@ -119,12 +119,12 @@ t_w , t_h = 50,50
 
 
 running = True
-bomb_group = pygame.sprite.Group()
-aid_group = pygame.sprite.Group()
-treasure_group = pygame.sprite.Group()
-explosive_group = pygame.sprite.Group()
-explosive_frames = _create_explosive_surface_list(explosive_w,explosive_h,3)
-
+# bomb_group = pygame.sprite.Group()
+# aid_group = pygame.sprite.Group()
+# treasure_group = pygame.sprite.Group()
+# explosive_group = pygame.sprite.Group()
+# explosive_frames = _create_explosive_surface_list(explosive_w,explosive_h,3)
+falling_objects_group = pygame.sprite.Group()
 
 
 while running:
@@ -138,21 +138,21 @@ while running:
         h.update()
         print("1 Key pressed:")
     elif event.type == SPAWN_BOMB_EVENT:
-      bomb_surface = _create_bomb_surface(bomb_w,bomb_h)
+      # bomb_surface = _create_bomb_surface(bomb_w,bomb_h)
       bomb_rec= pygame.Rect(random.randint(0,screen_width-bomb_w-1),0, bomb_w, bomb_h)
-      bomb = Falling_Object(bomb_rec, bomb_surface,vel = random.randint(1,4),acc=random.random())
-      bomb_group.add(bomb)
+      # bomb = Falling_Object(bomb_rec, bomb_surface,vel = random.randint(1,4),acc=random.random())
+      falling_objects_group.add(Bomb(bomb_rec,vel = random.randint(1,4),acc=random.random()))
       print("Bomb event triggered")
     elif event.type == SPAWN_AID_EVENT:
-      aid_surface = _create_aid_surface(aid_w, aid_h) 
+      # aid_surface = _create_aid_surface(aid_w, aid_h) 
       aid_rec = pygame.Rect(random.randint(0,screen_width-aid_w-1),0, aid_w, aid_h)
-      aid = Falling_Object(aid_rec,aid_surface, vel = random.randint(1,3), acc=random.random())
-      aid_group.add(aid)
+      # aid = Falling_Object(aid_rec,aid_surface, vel = random.randint(1,3), acc=random.random())
+      falling_objects_group.add(Aid(aid_rec, vel = random.randint(1,3), acc=random.random()))
     elif event.type == SPAWN_TREASURE_EVENT:
-      treasure_surface = _create_treasure_surface(t_w, t_h) 
+      # treasure_surface = _create_treasure_surface(t_w, t_h) 
       treasure_rec = pygame.Rect(random.randint(0,screen_width-t_w-1),0, t_w, t_h)
-      treasure = Falling_Object(treasure_rec,treasure_surface, vel = random.randint(1,3), acc=random.random())
-      treasure_group.add(treasure)
+      # treasure = Falling_Object(treasure_rec,treasure_surface, vel = random.randint(1,3), acc=random.random())
+      falling_objects_group.add(Treasure(treasure_rec, vel = random.randint(1,3), acc=random.random()))
 
     
     ninja.handle_events(event)
@@ -162,52 +162,58 @@ while running:
 
   # hanldle key presses for movement
   ninja_group.update(screen_width)
-  bomb_group.update(screen_height)
-  aid_group.update(screen_height)
-  treasure_group.update(screen_height)
-  explosive_group.update()
+  # bomb_group.update(screen_height)
+  # aid_group.update(screen_height)
+  # treasure_group.update(screen_height)
+  # explosive_group.update()
+  falling_objects_group.update(screen_height)
   
 
-  bomb_hits = pygame.sprite.spritecollide(ninja, bomb_group, dokill = True )
-  if bomb_hits:
+  # bomb_hits = pygame.sprite.spritecollide(ninja, bomb_group, dokill = True )
+  # if bomb_hits:
   
-    for _ in bomb_hits:
-      ninja.update_lives(-1)
-      bomb_hit_sound.play()
+  #   for _ in bomb_hits:
+  #     ninja.update_lives(-1)
+  #     bomb_hit_sound.play()
 
-      # create explosive
-      explosive_rec= pygame.Rect(bomb.rect.x,bomb.rect.y,explosive_w , explosive_w)
-      explosive = Explosive(explosive_rec, explosive_frames)
-      explosive_group.add(explosive)
+  #     # create explosive
+  #     explosive_rec= pygame.Rect(bomb.rect.x,bomb.rect.y,explosive_w , explosive_w)
+  #     explosive = Explosive(explosive_rec, explosive_frames)
+  #     explosive_group.add(explosive)
       
       
-      if ninja.num_of_lives<=0:
-          ninja.ends()
-          print(ninja)
+  #     if ninja.num_of_lives<=0:
+  #         ninja.ends()
+  #         print(ninja)
 
-  aid_hits = pygame.sprite.spritecollide(ninja, aid_group, dokill = True)
-  if aid_hits:
-    for _ in aid_hits:
-      ninja.update_lives(1)
-      aid_hit_sound.play()
+  # aid_hits = pygame.sprite.spritecollide(ninja, aid_group, dokill = True)
+  # if aid_hits:
+  #   for _ in aid_hits:
+  #     ninja.update_lives(1)
+  #     aid_hit_sound.play()
+  # # end if
+  # treasure_hits = pygame.sprite.spritecollide(ninja, treasure_group, dokill = True)
+  # if treasure_hits:
+  #   for _ in treasure_hits:
+  #     ninja.update_score(1)
+  #     treasure_hit_sound.play()
+
   # end if
-  treasure_hits = pygame.sprite.spritecollide(ninja, treasure_group, dokill = True)
-  if treasure_hits:
-    for _ in treasure_hits:
-      ninja.update_score(1)
-      treasure_hit_sound.play()
-  # end if
-    
+  hits = pygame.sprite.spritecollide(ninja, falling_objects_group, dokill = True )
+  if hits:
+    for hit_object in hits:
+      hit_object.apply_effect(ninja)
 
 
   screen_surface.blit(sky_surface, (0,0))
   screen_surface.blit(grass_surface, (0,sky_raw_height))
   h.draw(screen_surface,ninja.num_of_lives)
   ninja_group.draw(screen_surface)
-  bomb_group.draw(screen_surface)
-  aid_group.draw(screen_surface)
-  explosive_group.draw(screen_surface)
-  treasure_group.draw(screen_surface)
+  # bomb_group.draw(screen_surface)
+  # aid_group.draw(screen_surface)
+  # explosive_group.draw(screen_surface)
+  # treasure_group.draw(screen_surface)
+  falling_objects_group.draw(screen_surface)
   score_board.draw(screen_surface,ninja.score)
 
   pygame.display.update()

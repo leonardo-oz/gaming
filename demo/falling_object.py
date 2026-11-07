@@ -30,7 +30,7 @@ class Falling_Object(pygame.sprite.Sprite,ABC):
    # end method update
 
    @abstractmethod
-   def apply_efffect(n: Ninja):
+   def apply_effect(n: Ninja):
      pass
 
 
@@ -54,7 +54,7 @@ class Bomb(Falling_Object):
          Bomb.setup_surfaces(*rec.size)
 
       # random select a surf from surface_list
-      i = random.randint(1,3)
+      i = random.randint(0,len(Bomb.surface_list)-1)
       super().__init__(rec, Bomb.surface_list[i], vel, acc)
 
    @classmethod
@@ -72,7 +72,7 @@ class Bomb(Falling_Object):
 
    # end setup method
 
-   def apply_efffect(n:Ninja):
+   def apply_effect(self,n:Ninja):
       n.update_lives(-1)
       Bomb.sound.play()
    # end apply effect method
@@ -104,7 +104,9 @@ class Aid(Falling_Object):
       surface = pygame.transform.scale(pygame.image.\
                      load(f"pics/aid.png"),(aid_w,\
                                                  aid_h)) 
-      cls.surface_list.append(surface)        
+      if not cls.surface_list:
+         cls.surface_list = []
+         cls.surface_list.append(surface)        
    # End setup_surfaces
 
    @classmethod
@@ -113,7 +115,7 @@ class Aid(Falling_Object):
 
    # end setup method
 
-   def apply_efffect(n:Ninja):
+   def apply_effect(self,n:Ninja):
       n.update_lives(1)
       Aid.sound.play()
    # end apply effect method
@@ -123,8 +125,7 @@ class Aid(Falling_Object):
 
 class Treasure(Falling_Object):
    sound = None
-   surface_list = None
-   prize_list =None
+   surface_dict = None
   
    
    def __init__(self, rec:pygame.Rect,vel, acc):
@@ -133,20 +134,22 @@ class Treasure(Falling_Object):
          Treasure.setup_sound()
       # end if not Treasure.s
 
-      if not Treasure.surface_list:
+      if not Treasure.surface_dict:
          Treasure.setup_surfaces(*rec.size)
 
       # random select a surf from surface_list
-      i = random.randint(0,2)
-      super().__init__(rec, Treasure.surface_list[i], vel, acc)
+      i = random.randint(1,3)
+      super().__init__(rec, Treasure.surface_dict[i][1], vel, acc)
+      self.prize = Treasure.surface_dict[i][0]
 
    @classmethod
    def setup_surfaces(cls,treasure_w, treasure_h):
-      cls.surface_list = [pygame.transform.scale(pygame.image.\
+      cls.surface_dict ={i:[i*10,pygame.transform.scale(pygame.image.\
                      load(f"pics/treasure_{i}.png"),(treasure_w,\
-                                                 treasure_h)) \
+                                                 treasure_h))\
+                     ]\
                      for i in range(1,4)
-      ]
+      }
    # End setup_surfaces
 
    @classmethod
@@ -155,9 +158,8 @@ class Treasure(Falling_Object):
 
    # end setup method
 
-   def apply_efffect(n:Ninja):
-      
-      n.update_score(1)
+   def apply_effect(self,n:Ninja):
+      n.update_score(self.prize)
       Treasure.sound.play()
    # end apply effect method
 # end class Treasure

@@ -32,6 +32,7 @@ class Ninja(pygame.sprite.Sprite):
 
   def is_alive(self):
     if self.num_of_lives == 0:
+      self.current_status = NinjaState.DEAD
       return False
     else:
       return True
