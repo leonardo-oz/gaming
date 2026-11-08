@@ -1,6 +1,7 @@
 import pygame
 from abc import ABC, abstractmethod
 from ninja import Ninja
+from game_event import GameEvent
 import random
 
 
@@ -75,6 +76,9 @@ class Bomb(Falling_Object):
    def apply_effect(self,n:Ninja):
       n.update_lives(-1)
       Bomb.sound.play()
+
+
+      pygame.event.post(pygame.event.Event(GameEvent.BOMB_EXPLODED_EVENT,x = self.rect.x,y = self.rect.y))
    # end apply effect method
 # end class Bomb
 
