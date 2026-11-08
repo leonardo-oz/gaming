@@ -100,8 +100,8 @@ def _create_explosive_surface_list(w,h,num_repeats=1):
 # End method
 
 
-# explosive_surface_list = []
-# explosive_w, explosive_h=100,100
+explosive_surface_list = []
+explosive_w, explosive_h=100,100
 
 
 
@@ -122,8 +122,8 @@ running = True
 # bomb_group = pygame.sprite.Group()
 # aid_group = pygame.sprite.Group()
 # treasure_group = pygame.sprite.Group()
-# explosive_group = pygame.sprite.Group()
-# explosive_frames = _create_explosive_surface_list(explosive_w,explosive_h,3)
+explosive_group = pygame.sprite.Group()
+explosive_frames = _create_explosive_surface_list(explosive_w,explosive_h,3)
 falling_objects_group = pygame.sprite.Group()
 
 
@@ -165,7 +165,7 @@ while running:
   # bomb_group.update(screen_height)
   # aid_group.update(screen_height)
   # treasure_group.update(screen_height)
-  # explosive_group.update()
+  explosive_group.update()
   falling_objects_group.update(screen_height)
   
 
@@ -176,7 +176,7 @@ while running:
   #     ninja.update_lives(-1)
   #     bomb_hit_sound.play()
 
-  #     # create explosive
+  #      # create explosive
   #     explosive_rec= pygame.Rect(bomb.rect.x,bomb.rect.y,explosive_w , explosive_w)
   #     explosive = Explosive(explosive_rec, explosive_frames)
   #     explosive_group.add(explosive)
@@ -203,6 +203,13 @@ while running:
   if hits:
     for hit_object in hits:
       hit_object.apply_effect(ninja)
+      if isinstance(hit_object,Bomb):
+         # create explosive
+        explosive_rec= pygame.Rect(hit_object.rect.x,hit_object.rect.y,explosive_w , explosive_w)
+        explosive = Explosive(explosive_rec, explosive_frames)
+        explosive_group.add(explosive)
+
+
 
 
   screen_surface.blit(sky_surface, (0,0))
@@ -211,7 +218,7 @@ while running:
   ninja_group.draw(screen_surface)
   # bomb_group.draw(screen_surface)
   # aid_group.draw(screen_surface)
-  # explosive_group.draw(screen_surface)
+  explosive_group.draw(screen_surface)
   # treasure_group.draw(screen_surface)
   falling_objects_group.draw(screen_surface)
   score_board.draw(screen_surface,ninja.score)
