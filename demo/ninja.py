@@ -2,6 +2,7 @@
 from pygame.event import Event
 import pygame
 from ninja_config import NinjaState
+import numpy as np
 
 
 class Ninja(pygame.sprite.Sprite):
@@ -28,14 +29,11 @@ class Ninja(pygame.sprite.Sprite):
   @property
   def image(self):
     return Ninja.status_surface_dict[self.current_status]
+  
+  
   @property
-
   def is_alive(self):
-    if self.num_of_lives == 0:
-      self.current_status = NinjaState.DEAD
-      return False
-    else:
-      return True
+      return self.num_of_lives > 0
     # end if
   # end method
 
@@ -64,9 +62,14 @@ class Ninja(pygame.sprite.Sprite):
     status_dict= {}
     for k in status_file_dict:
       ninja=pygame.image.load(f"pics/{status_file_dict[k]}").convert_alpha()
-      ninja_surface=pygame.transform.scale(ninja,(nj_w, nj_h))
+      if k == NinjaState.DEAD:
+        ninja_surface=pygame.transform.scale(ninja,(nj_h, nj_w))
+      else:
+        ninja_surface=pygame.transform.scale(ninja,(nj_w, nj_h))
       status_dict[k] = ninja_surface
     # end for key value
+
+  
     return status_dict
 
 
@@ -74,33 +77,25 @@ class Ninja(pygame.sprite.Sprite):
 
 
   def __str__(self):
-    return f"current status: {self.current_status}, position: {self.rect.x},{self.rect.y}, current speed: {self.vel}"
+    return f"current status: {self.current_status}, position: {self.rect.x},{self.rect.y}, current speed: {self.vel}, number of lives: {self.num_of_lives}"
     
 
 
   def handle_events(self,event: Event):
     """handle discrete (single-press / release) events."""
 
-    if self.current_status == NinjaState.DEAD:
+    if not self.is_alive:
       return 
-
-    # if self.current_status != NinjaState.DEAD:
-    #   if event.type == pygame.KEYDOWN:
-    #     if event.key == pygame.K_LEFT:
-    #       self.current_status= NinjaState.RUNNING_LEFT
-    #       print("Left Key Down pressed:", event.key)                                    
-    #     elif event.key == pygame.K_RIGHT: 
-    #       self.current_status= NinjaState.RUNNING_RIGHT
-    #       print("Right Key Down pressed:", event.key)
-    #     elif event.key == pygame.K_DOWN:
-    #       self.current_status= NinjaState.MEDITATING
-    #       print("Down Key pressed:", event.key)
-    #   # End if event.type == pygame.KEYDOWN:
        
     if event.type == pygame.KEYUP:
       print("Key Up pressed:", event.key)
       if event.key in (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN):
         self.current_status= NinjaState.STANDING
+    
+    elif event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_DOWN:
+        self.current_status= NinjaState.MEDITATING
+        print("Down Key pressed:", event.key)
 
     elif event.type == pygame.MOUSEBUTTONDOWN:
       print("Mouse Button Down pressed:", event.button)
@@ -115,17 +110,19 @@ class Ninja(pygame.sprite.Sprite):
 
     # End method
 
-  def ends(self):
-    self.current_status = NinjaState.DEAD
-
      
   
   def update(self, screen_width: int):
+    if not self.is_alive:
+         return
+
+    if self.current_status in (NinjaState.MEDITATING, NinjaState.BRUCE_LEE):
+          return
+
+    
     # handle continuous event
     keys = pygame.key.get_pressed()
-
-    if self.current_status == NinjaState.DEAD:
-      return 
+      
     if keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]:
       self.current_status= NinjaState.RUNNING_LEFT
       self.rect.left = max(0, self.rect.left - self.vel)
@@ -140,10 +137,10 @@ class Ninja(pygame.sprite.Sprite):
 
   def update_lives(self,v):
     if self.is_alive:
-      self.num_of_lives = max(0, self.num_of_lives + v) 
+      self.num_of_lives = np.clip(self.num_of_lives+v,0,Ninja.MAX_LIVES)
       if self.num_of_lives == 0:
-        self.current_status== NinjaState.DEAD
-      
+        self.current_status = NinjaState.DEAD
+      # end if self.num_of_lives ==0
 
     # end if self.is_alive:
   # end update_lives method
