@@ -8,11 +8,13 @@ import numpy as np
 class Ninja(pygame.sprite.Sprite):
   MAX_LIVES = 5
   status_surface_dict = None
+  jumping_frames = None
 
   def __init__(self,
                ninja_rect: pygame.Rect,
                default_status=NinjaState.STANDING,
-               vel = 5
+               vel_x = 5,
+               vel_y_ini = -20
                
                ):
     super().__init__()
@@ -20,10 +22,22 @@ class Ninja(pygame.sprite.Sprite):
     if not Ninja.status_surface_dict:
       Ninja.setup(*ninja_rect.size)
 
+    if not Ninja.jumping_frames:
+      # setp jumping frames
+      Ninja.setup_jump(*ninja_rect.size)
+      Ninja.status_surface_dict[NinjaState.JUMPING] = Ninja.jumping_frames[2]
+
+
+
     self.current_status = default_status
-    self.vel = vel 
+    self.vel_x = vel_x
+    self.vel_y_ini = vel_y_ini 
+    self.vel_y  = 0
+    self.original_y = self.rect.top
+    self.gravity = 2
     self.num_of_lives = Ninja.MAX_LIVES
     self._score = 0
+
 
   
   @property
@@ -40,6 +54,15 @@ class Ninja(pygame.sprite.Sprite):
   @property
   def score(self) ->int:
     return self._score
+  # end method score
+
+
+  @classmethod
+  def setup_jump(cls,nj_w,nj_h):
+    cls.jumping_frames = [ pygame.transform.scale(pygame.image.load(f"pics/ninja_jump_{i}.png").convert_alpha(),(nj_w, nj_h))
+                        for i in range(6)]
+  # end method setup_jump
+
 
   @classmethod
   def setup(cls,nj_width, nj_height):
@@ -51,10 +74,11 @@ class Ninja(pygame.sprite.Sprite):
         NinjaState.MEDITATING: "nj_meditaing.png",
         NinjaState.BRUCE_LEE: "nj_brucelee.png",
         NinjaState.DEAD: "nj_dead.png",
-        NinjaState.DUCKING: "ninja_duck.png"
-      }
+        NinjaState.DUCKING: "ninja_duck.png", 
+       }
     cls.status_surface_dict = cls._create_status_surface_dic(nj_file_dic,nj_width, nj_height)
   # End setup
+
 
 
   @classmethod
@@ -98,6 +122,10 @@ class Ninja(pygame.sprite.Sprite):
       if event.key == pygame.K_DOWN:
         self.current_status= NinjaState.DUCKING
         print("Down Key pressed:", event.key)
+      elif event.key == pygame.K_UP:
+        self.vel_y = self.vel_y_ini
+        self.current_status = NinjaState.JUMPING
+        print("Jumping")
 
     elif event.type == pygame.MOUSEBUTTONDOWN:
       print("Mouse Button Down pressed:", event.button)
@@ -114,12 +142,23 @@ class Ninja(pygame.sprite.Sprite):
 
      
   
-  def update(self, screen_width: int):
+  def update(self,screen_height, screen_width: int):
     self.rect = self.image.get_rect(midbottom=self.rect.midbottom)  # Update the rect to match the current image size
     if not self.is_alive:
-         return
+         return 
 
-    if self.current_status in (NinjaState.DUCKING, NinjaState.BRUCE_LEE):
+    if self.current_status == NinjaState.JUMPING:
+      self.vel_y += self.gravity
+      # self.ret.y + self.vel_y >= self.original_y:
+      self.rect.y = np.clip(self.rect.y+self.vel_y,0,self.original_y)
+      if self.rect.y == self.original_y:
+        self.current_status = NinjaState.STANDING
+        return
+
+     
+
+
+    if self.current_status in (NinjaState.DUCKING, NinjaState.BRUCE_LEE, NinjaState.JUMPING):
           return
 
     
@@ -128,12 +167,12 @@ class Ninja(pygame.sprite.Sprite):
       
     if keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]:
       self.current_status= NinjaState.RUNNING_LEFT
-      self.rect.left = max(0, self.rect.left - self.vel)
+      self.rect.left = max(0, self.rect.left - self.vel_x)
       print("Left pressed:", self.rect.left)
             
     if keys[pygame.K_RIGHT]and not keys[pygame.K_LEFT]:
       self.current_status = NinjaState.RUNNING_RIGHT
-      self.rect.right = min(screen_width,self.rect.right + self.vel)
+      self.rect.right = min(screen_width,self.rect.right + self.vel_x)
       print("Right pressed:", self.rect.right)
   # end method update
 

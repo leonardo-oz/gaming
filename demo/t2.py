@@ -48,7 +48,7 @@ nj_ini_rec = pygame.Rect(screen_width//2,
                         #  sky_raw_height-ninja_height//2+3,
                         screen_height-ninja_height-10,
                          ninja_width,ninja_height)
-ninja = Ninja(nj_ini_rec,vel=vel)
+ninja = Ninja(nj_ini_rec)
 ninja_group = pygame.sprite.GroupSingle(ninja)
 
 
@@ -114,7 +114,7 @@ while running:
 
 
   # hanldle key presses for movement
-  ninja_group.update(screen_width)
+  ninja_group.update(screen_width,screen_height)
   explosive_group.update()
   falling_objects_group.update(screen_height)
   
