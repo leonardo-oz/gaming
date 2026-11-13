@@ -50,8 +50,8 @@ class Ninja(pygame.sprite.Sprite):
         NinjaState.RUNNING_LEFT: "nj_run_left.png",
         NinjaState.MEDITATING: "nj_meditaing.png",
         NinjaState.BRUCE_LEE: "nj_brucelee.png",
-        NinjaState.DEAD: "nj_dead.png"
-
+        NinjaState.DEAD: "nj_dead.png",
+        NinjaState.DUCKING: "ninja_duck.png"
       }
     cls.status_surface_dict = cls._create_status_surface_dic(nj_file_dic,nj_width, nj_height)
   # End setup
@@ -64,6 +64,8 @@ class Ninja(pygame.sprite.Sprite):
       ninja=pygame.image.load(f"pics/{status_file_dict[k]}").convert_alpha()
       if k == NinjaState.DEAD:
         ninja_surface=pygame.transform.scale(ninja,(nj_h, nj_w))
+      elif k == NinjaState.DUCKING:
+        ninja_surface=pygame.transform.scale(ninja,(nj_w, nj_w))
       else:
         ninja_surface=pygame.transform.scale(ninja,(nj_w, nj_h))
       status_dict[k] = ninja_surface
@@ -94,7 +96,7 @@ class Ninja(pygame.sprite.Sprite):
     
     elif event.type == pygame.KEYDOWN:
       if event.key == pygame.K_DOWN:
-        self.current_status= NinjaState.MEDITATING
+        self.current_status= NinjaState.DUCKING
         print("Down Key pressed:", event.key)
 
     elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -113,10 +115,11 @@ class Ninja(pygame.sprite.Sprite):
      
   
   def update(self, screen_width: int):
+    self.rect = self.image.get_rect(midbottom=self.rect.midbottom)  # Update the rect to match the current image size
     if not self.is_alive:
          return
 
-    if self.current_status in (NinjaState.MEDITATING, NinjaState.BRUCE_LEE):
+    if self.current_status in (NinjaState.DUCKING, NinjaState.BRUCE_LEE):
           return
 
     

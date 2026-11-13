@@ -42,18 +42,6 @@ h= Heath_Bar_Heart(heart_surface,20,10)
 score_board = ScoreBoared(pygame.Rect(screen_width-200,0,200,100))
 
 
-# Create a ninja object
-nj_file_dic = {
-    NinjaState.STANDING: "nj_stand.png",
-    NinjaState.RUNNING_RIGHT: "nj_run_right.png",
-    NinjaState.RUNNING_LEFT: "nj_run_left.png",
-    NinjaState.MEDITATING: "nj_meditaing.png",
-    NinjaState.BRUCE_LEE: "nj_brucelee.png",
-    NinjaState.DEAD: "nj_dead.png"
-
-  }
-
-
 
 
 nj_ini_rec = pygame.Rect(screen_width//2,
@@ -141,6 +129,7 @@ while running:
   screen_surface.blit(grass_surface, (0,sky_raw_height))
   h.draw(screen_surface,ninja.num_of_lives)
   ninja_group.draw(screen_surface)
+  pygame.draw.rect(screen_surface, (255,0,0), ninja.rect, 2)  # Draw a red rectangle around the ninja for debugging
   explosive_group.draw(screen_surface)
   falling_objects_group.draw(screen_surface)
   score_board.draw(screen_surface,ninja.score)
