@@ -114,7 +114,7 @@ while running:
 
 
   # hanldle key presses for movement
-  ninja_group.update(screen_width,screen_height)
+  ninja_group.update(screen_width)
   explosive_group.update()
   falling_objects_group.update(screen_height)
   
