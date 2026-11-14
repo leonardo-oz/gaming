@@ -80,10 +80,6 @@ while running:
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       running = False
-    elif event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_1:
-        h.update()
-        print("1 Key pressed:")
     elif event.type == GameEvent.SPAWN_BOMB_EVENT:
       bomb_rec= pygame.Rect(random.randint(0,screen_width-bomb_w-1),0, bomb_w, bomb_h)
       falling_objects_group.add(Bomb(bomb_rec,vel = random.randint(1,4),acc=random.random()))
