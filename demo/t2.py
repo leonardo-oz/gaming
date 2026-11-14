@@ -59,18 +59,9 @@ pygame.time.set_timer(GameEvent.SPAWN_TREASURE_EVENT, 3000)
 
 
 
-def _create_explosive_surface_list(w,h,num_repeats=1):
-  l = []
-  for i in range(0,4):
-    for j in range(0,num_repeats):
-      explosive_surface_raw = pygame.image.load(f"pics/explosive_{i}.png")
-      explosive_surface = pygame.transform.scale(explosive_surface_raw,(w,h))
-      l.append(explosive_surface)
-  return l
-# End method
 
 
-explosive_surface_list = []
+
 explosive_w, explosive_h=100,100
 bomb_w, bomb_h = 50,50
 aid_w, aid_h = 50,50
@@ -80,7 +71,6 @@ t_w , t_h = 50,50
 running = True
 
 explosive_group = pygame.sprite.Group()
-explosive_frames = _create_explosive_surface_list(explosive_w,explosive_h,3)
 falling_objects_group = pygame.sprite.Group()
 
 
@@ -106,7 +96,7 @@ while running:
       falling_objects_group.add(Treasure(treasure_rec, vel = random.randint(1,3), acc=random.random()))
     elif event.type == GameEvent.BOMB_EXPLODED_EVENT:
       explosive_rect = pygame.Rect(event.x,event.y,explosive_w,explosive_h)
-      explosive = Explosive(pygame.Rect(event.x,event.y,explosive_w,explosive_h),explosive_frames)
+      explosive = Explosive(pygame.Rect(event.x,event.y,explosive_w,explosive_h))
       explosive_group.add(explosive)
     ninja.handle_events(event)
 
