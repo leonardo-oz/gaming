@@ -14,7 +14,7 @@ class Ninja(pygame.sprite.Sprite):
                ninja_rect: pygame.Rect,
                default_status=NinjaState.STANDING,
                vel_x = 5,
-               vel_y_ini = -20
+               vel_y_ini = -30
                
                ):
     super().__init__()
@@ -25,10 +25,9 @@ class Ninja(pygame.sprite.Sprite):
     if not Ninja.jumping_frames:
       # setp jumping frames
       Ninja.setup_jump(*ninja_rect.size)
-      Ninja.status_surface_dict[NinjaState.JUMPING] = Ninja.jumping_frames[2]
 
 
-
+ 
     self.current_status = default_status
     self.vel_x = vel_x
     self.vel_y_ini = vel_y_ini 
@@ -39,10 +38,19 @@ class Ninja(pygame.sprite.Sprite):
     self._score = 0
 
 
-  
+
   @property
   def image(self):
+    if self.current_status == NinjaState.JUMPING:
+      if Ninja.jumping_frames != None:
+        ninja_v_pos = (self.vel_y-self.vel_y_ini) / (abs(self.vel_y_ini) - self.vel_y_ini)
+        ninja_index = np.clip(int(ninja_v_pos * len(self.jumping_frames)),0,len(self.jumping_frames) -1)
+        return Ninja.jumping_frames[ninja_index]
+      # end if self.jumping_frames != None
+    # end if self.current_status  == NinjaState.JUMPING:
+        
     return Ninja.status_surface_dict[self.current_status]
+  # end property method image
   
   
   @property
@@ -126,6 +134,7 @@ class Ninja(pygame.sprite.Sprite):
           print("Down Key pressed:", event.key)
       elif event.key == pygame.K_UP:
         if self.current_status != NinjaState.JUMPING:
+          Ninja.status_surface_dict[NinjaState.JUMPING] = self.image
           self.vel_y = self.vel_y_ini
           self.current_status = NinjaState.JUMPING
           print("Jumping")
