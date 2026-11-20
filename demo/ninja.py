@@ -6,7 +6,7 @@ import numpy as np
 
 
 class Ninja(pygame.sprite.Sprite):
-  MAX_LIVES = 5
+  MAX_LIVES = 1
   status_surface_dict = None
   jumping_frames = None
 
@@ -45,6 +45,7 @@ class Ninja(pygame.sprite.Sprite):
       if Ninja.jumping_frames != None:
         ninja_v_pos = (self.vel_y-self.vel_y_ini) / (abs(self.vel_y_ini) - self.vel_y_ini)
         ninja_index = np.clip(int(ninja_v_pos * len(self.jumping_frames)),0,len(self.jumping_frames) -1)
+        # print(f"jumping frame index: {ninja_index}")
         return Ninja.jumping_frames[ninja_index]
       # end if self.jumping_frames != None
     # end if self.current_status  == NinjaState.JUMPING:
@@ -208,6 +209,13 @@ class Ninja(pygame.sprite.Sprite):
 
     # end if not self.is_alive
   # end method update score
+
+  def reset(self):
+    self.current_status = NinjaState.STANDING 
+    self.vel_y  = 0
+    self.num_of_lives = Ninja.MAX_LIVES
+    self._score = 0
+  # end method reset
 
 
       

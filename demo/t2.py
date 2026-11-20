@@ -1,7 +1,7 @@
 from health_bar import Heath_Bar_Heart
 from ninja import Ninja
 from falling_object import Bomb,Aid,Treasure
-from ninja_config import NinjaState
+from ninja_config import NinjaState, GameState
 from explosive import Explosive
 from score_board import ScoreBoared
 from game_event import GameEvent
@@ -12,7 +12,7 @@ pygame.init()
 pygame.mixer.init()
 
 
-screen_width, screen_height = 800,600
+screen_width, screen_height = 1200,600
 screen_surface = pygame.display.set_mode((screen_width, screen_height))
 
 sky_surface_raw = pygame.image.load("pics/sky.png")
@@ -48,7 +48,7 @@ nj_ini_rec = pygame.Rect(screen_width//2,
                         #  sky_raw_height-ninja_height//2+3,
                         screen_height-ninja_height-10,
                          ninja_width,ninja_height)
-ninja = Ninja(nj_ini_rec)
+ninja = Ninja(nj_ini_rec,vel_y_ini=-30)
 ninja_group = pygame.sprite.GroupSingle(ninja)
 
 
@@ -57,7 +57,16 @@ pygame.time.set_timer(GameEvent.SPAWN_BOMB_EVENT,2000)
 pygame.time.set_timer(GameEvent.SPAWN_AID_EVENT, 5000)
 pygame.time.set_timer(GameEvent.SPAWN_TREASURE_EVENT, 3000)
 
+def draw_instructions(surface: pygame.Surface,text:str, center_x,y:int,font:pygame.font.SysFont,colour:tuple):
+  line_height = font.get_linesize()
 
+  for line in text.splitlines():
+    line_surface = font.render(line,True,colour)
+    line_rect = line_surface.get_rect(center = (center_x,y))
+    surface.blit(line_surface, line_rect)
+    print("line drawn")
+    y+=line_height
+# end method draw
 
 
 
@@ -73,6 +82,12 @@ running = True
 explosive_group = pygame.sprite.Group()
 falling_objects_group = pygame.sprite.Group()
 
+curr_game_state = GameState.START
+text_font = pygame.font.SysFont("Arial", 36)
+instruction_color = (81,66,245)
+instruction_ini_y = 40
+start_instructions = f"Hello, young gamer \nIn this game you need to: \n Dodge bombs \n collect health \ncollect treasure to gain score \narrow keys to move\npress space to start\n good luck Fellow!"
+end_instructions = f"press space to try again"
 
 while running:
   clock.tick(fps)  # Use Clock instead of delay for consistent frame pacing
@@ -80,45 +95,67 @@ while running:
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       running = False
-    elif event.type == GameEvent.SPAWN_BOMB_EVENT:
-      bomb_rec= pygame.Rect(random.randint(0,screen_width-bomb_w-1),0, bomb_w, bomb_h)
-      falling_objects_group.add(Bomb(bomb_rec,vel = random.randint(1,4),acc=random.random()))
-      print("Bomb event triggered")
-    elif event.type == GameEvent.SPAWN_AID_EVENT:
-      aid_rec = pygame.Rect(random.randint(0,screen_width-aid_w-1),0, aid_w, aid_h)
-      falling_objects_group.add(Aid(aid_rec, vel = random.randint(1,3), acc=random.random()))
-    elif event.type == GameEvent.SPAWN_TREASURE_EVENT:
-      treasure_rec = pygame.Rect(random.randint(0,screen_width-t_w-1),0, t_w, t_h)
-      falling_objects_group.add(Treasure(treasure_rec, vel = random.randint(1,3), acc=random.random()))
-    elif event.type == GameEvent.BOMB_EXPLODED_EVENT:
-      explosive_rect = pygame.Rect(event.x,event.y,explosive_w,explosive_h)
-      explosive = Explosive(pygame.Rect(event.x,event.y,explosive_w,explosive_h))
-      explosive_group.add(explosive)
-    ninja.handle_events(event)
+
+    if curr_game_state == GameState.START:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+          curr_game_state = GameState.PLAY
+    elif curr_game_state == GameState.PLAY:
+        if event.type == GameEvent.SPAWN_BOMB_EVENT:
+          bomb_rec= pygame.Rect(random.randint(0,screen_width-bomb_w-1),0, bomb_w, bomb_h)
+          falling_objects_group.add(Bomb(bomb_rec,vel = random.randint(1,4),acc=random.random()))
+          print("Bomb event triggered")
+        elif event.type == GameEvent.SPAWN_AID_EVENT:
+          aid_rec = pygame.Rect(random.randint(0,screen_width-aid_w-1),0, aid_w, aid_h)
+          falling_objects_group.add(Aid(aid_rec, vel = random.randint(1,3), acc=random.random()))
+        elif event.type == GameEvent.SPAWN_TREASURE_EVENT:
+          treasure_rec = pygame.Rect(random.randint(0,screen_width-t_w-1),0, t_w, t_h)
+          falling_objects_group.add(Treasure(treasure_rec, vel = random.randint(1,3), acc=random.random()))
+        elif event.type == GameEvent.BOMB_EXPLODED_EVENT:
+          explosive_rect = pygame.Rect(event.x,event.y,explosive_w,explosive_h)
+          explosive = Explosive(pygame.Rect(event.x,event.y,explosive_w,explosive_h))
+          explosive_group.add(explosive)
+        ninja.handle_events(event)
+    elif curr_game_state == GameState.END:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+          curr_game_state = GameState.PLAY
+          ninja.reset()
+          falling_objects_group.empty()
+          explosive_group.empty()
+          
+    
+   
 
   # End for 
 
 
   # hanldle key presses for movement
-  ninja_group.update(screen_width)
-  explosive_group.update()
-  falling_objects_group.update(screen_height)
-  
- 
-  hits = pygame.sprite.spritecollide(ninja, falling_objects_group, dokill = True )
-  if ninja.is_alive:
-    for hit_object in hits:
-      hit_object.apply_effect(ninja)
+
+  if curr_game_state == GameState.PLAY:
+    ninja_group.update(screen_width)
+    explosive_group.update()
+    falling_objects_group.update(screen_height)
+    hits = pygame.sprite.spritecollide(ninja, falling_objects_group, dokill = True )
+    if ninja.is_alive:
+      for hit_object in hits:
+        hit_object.apply_effect(ninja)
+    else:
+      curr_game_state = GameState.END
+
 
 
   screen_surface.blit(sky_surface, (0,0))
   screen_surface.blit(grass_surface, (0,sky_raw_height))
-  h.draw(screen_surface,ninja.num_of_lives)
   ninja_group.draw(screen_surface)
-  pygame.draw.rect(screen_surface, (255,0,0), ninja.rect, 2)  # Draw a red rectangle around the ninja for debugging
-  explosive_group.draw(screen_surface)
-  falling_objects_group.draw(screen_surface)
-  score_board.draw(screen_surface,ninja.score)
+  if curr_game_state == GameState.START:
+    draw_instructions(screen_surface,start_instructions,screen_width//2,instruction_ini_y,text_font,instruction_color)
+  elif curr_game_state == GameState.PLAY:
+      h.draw(screen_surface,ninja.num_of_lives)
+      pygame.draw.rect(screen_surface, (255,0,0), ninja.rect, 2)  # Draw a red rectangle around the ninja for debugging
+      explosive_group.draw(screen_surface)
+      falling_objects_group.draw(screen_surface)
+      score_board.draw(screen_surface,ninja.score)
+  elif curr_game_state == GameState.END:
+    draw_instructions(screen_surface,end_instructions,screen_width//2,instruction_ini_y,text_font,instruction_color)
 
   pygame.display.update()
 # End while
