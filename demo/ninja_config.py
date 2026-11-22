@@ -7,6 +7,8 @@ class NinjaState(Enum):
   MEDITATING= auto()
   BRUCE_LEE= auto()
   DEAD= auto()
+  DUCKING= auto()
+  JUMPING = auto()
   # SOME= STANDING | RUNNING_LEFT |MEDITATING
 
 
