@@ -6,7 +6,7 @@ import numpy as np
 
 
 class Ninja(pygame.sprite.Sprite):
-  MAX_LIVES = 1
+  MAX_LIVES = 5
   status_surface_dict = None
   jumping_frames = None
 

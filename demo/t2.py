@@ -150,7 +150,7 @@ while running:
     draw_instructions(screen_surface,start_instructions,screen_width//2,instruction_ini_y,text_font,instruction_color)
   elif curr_game_state == GameState.PLAY:
       h.draw(screen_surface,ninja.num_of_lives)
-      pygame.draw.rect(screen_surface, (255,0,0), ninja.rect, 2)  # Draw a red rectangle around the ninja for debugging
+      # pygame.draw.rect(screen_surface, (255,0,0), ninja.rect, 2)  # Draw a red rectangle around the ninja for debugging
       explosive_group.draw(screen_surface)
       falling_objects_group.draw(screen_surface)
       score_board.draw(screen_surface,ninja.score)
